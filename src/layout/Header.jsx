@@ -142,7 +142,7 @@ function Header() {
               </button>
 
               <Link
-                to="/login"
+                to="/signup"
                 className="flex items-center gap-1 text-sm font-semibold"
               >
                 <User size={20} />
