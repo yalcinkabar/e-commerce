@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from '../api/axios'
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import ProductCard from "../components/ProductCard";
 import CategoryCard from "../components/CategoryCard";
@@ -53,6 +54,12 @@ function ShopPage() {
         </div>
 
     );
+    const categories = useSelector(
+        (state) => state.client.categories
+    );
+    const topCategories = [...categories]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 5);
 
     return (
         <>
@@ -71,12 +78,12 @@ function ShopPage() {
             </section>
 
             <section className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-6 py-8 sm:grid-cols-2 lg:grid-cols-5">
-                {products.slice(3, 8).map((product) => (
+                {topCategories.map((category) => (
                     <CategoryCard
-                        key={product.id}
-                        image={product.images?.[0]?.url}
-                        title="CLOTHS"
-                        count={5}
+                        key={category.id}
+                        image={category.img}
+                        title={category.title}
+                        count={category.rating}
                     />
                 ))}
             </section>

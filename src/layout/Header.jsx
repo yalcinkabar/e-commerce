@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Gravatar from "react-gravatar";
 import {
   Phone,
   Mail,
@@ -75,7 +77,14 @@ const Youtube = ({ size = 24, color = "currentColor" }) => (
   </svg>
 );
 
+
 function Header() {
+  const user = useSelector(
+    (state) => state.client.user
+  );
+  const categories = useSelector(
+    (state) => state.client.categories
+  );
   return (
     <header>
       {/* Dark alan - Desktop Only */}
@@ -126,10 +135,71 @@ function Header() {
             {/* Menu Links */}
             <nav className="flex items-center gap-6 text-sm font-semibold text-gray-500">
               <Link to="/">Home</Link>
-              <Link to="/shop" className="flex items-center gap-1">
-                Shop
-                <ChevronDown size={16} />
-              </Link>
+              <div className="group relative">
+                <Link
+                  to="/shop"
+                  className="flex items-center gap-1"
+                >
+                  Shop
+                  <ChevronDown size={16} />
+                </Link>
+
+                <div className="absolute left-0 top-full z-50 hidden min-w-[500px] gap-12 bg-white p-6 shadow-lg group-hover:flex">
+                  <div>
+                    <h3 className="mb-4 font-bold text-[#252B42]">
+                      Kadın
+                    </h3>
+
+                    <div className="flex flex-col gap-2">
+                      {categories
+                        .filter((cat) => cat.gender === "k")
+                        .map((cat) => (
+                          <Link
+                            key={cat.id}
+                            to={`/shop/kadin/${cat.title
+                              .toLowerCase()
+                              .replaceAll("ı", "i")
+                              .replaceAll("ş", "s")
+                              .replaceAll("ç", "c")
+                              .replaceAll("ğ", "g")
+                              .replaceAll("ü", "u")
+                              .replaceAll("ö", "o")}/${cat.id}`}
+                            className="text-gray-500 hover:text-[#23A6F0]"
+                          >
+                            {cat.title}
+                          </Link>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="mb-4 font-bold text-[#252B42]">
+                      Erkek
+                    </h3>
+
+                    <div className="flex flex-col gap-2">
+                      {categories
+                        .filter((cat) => cat.gender === "e")
+                        .map((cat) => (
+                          <Link
+                            key={cat.id}
+                            to={`/shop/erkek/${cat.title
+                              .toLowerCase()
+                              .replaceAll("ı", "i")
+                              .replaceAll("ş", "s")
+                              .replaceAll("ç", "c")
+                              .replaceAll("ğ", "g")
+                              .replaceAll("ü", "u")
+                              .replaceAll("ö", "o")}/${cat.id}`}
+                            className="text-gray-500 hover:text-[#23A6F0]"
+                          >
+                            {cat.title}
+                          </Link>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
               <Link to="/pages">Pages</Link>
               <Link to="/about">About</Link>
               <Link to="/contact">Contact</Link>
@@ -141,13 +211,27 @@ function Header() {
                 <Search size={20} />
               </button>
 
-              <Link
-                to="/signup"
-                className="flex items-center gap-1 text-sm font-semibold"
-              >
-                <User size={20} />
-                Login / Register
-              </Link>
+              {user?.email ? (
+                <div className="flex items-center gap-2">
+                  <Gravatar
+                    email={user.email}
+                    size={32}
+                    default="identicon"
+                    className="rounded-full"
+                  />
+                  <span className="text-sm font-semibold">
+                    {user.name}
+                  </span>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1 text-sm font-semibold"
+                >
+                  <User size={20} />
+                  Login / Register
+                </Link>
+              )}
 
               <button className="flex items-center gap-1">
                 <ShoppingCart size={20} />

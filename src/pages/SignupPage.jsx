@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import api from "../api/axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRoles } from "../store/actions/clientActions";
 
 function SignupPage() {
-    const [roles, setRoles] = useState([]);
+    const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
 
     const history = useHistory();
@@ -21,19 +23,13 @@ function SignupPage() {
     const selectedRole = watch("role_id");
     const password = watch("password");
 
+    const roles = useSelector(
+        (state) => state.client.roles
+    );
+
     useEffect(() => {
-        const fetchRoles = async () => {
-            try {
-                const response = await api.get("/roles");
-
-                setRoles(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchRoles();
-    }, []);
+        dispatch(fetchRoles());
+    }, [dispatch]);
 
     useEffect(() => {
         const customerRole = roles.find(
