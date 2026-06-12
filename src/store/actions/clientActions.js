@@ -5,6 +5,9 @@ import {
     SET_USER,
     SET_ROLES,
     SET_CATEGORIES,
+    SET_ADDRESS_LIST,
+    SET_CARDS,
+    SET_ORDERS,
 } from "../actionTypes";
 
 
@@ -98,6 +101,215 @@ export const fetchCategories = () => {
 
             dispatch(
                 setCategories(response.data)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const setAddressList = (
+    addressList
+) => {
+    return {
+        type: SET_ADDRESS_LIST,
+        payload: addressList,
+    };
+};
+export const fetchAddresses = () => {
+    return async (dispatch) => {
+        try {
+            const response =
+                await api.get(
+                    "/user/address"
+                );
+
+            dispatch(
+                setAddressList(
+                    response.data
+                )
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const addAddress = (
+    addressData
+) => {
+    return async (dispatch) => {
+        try {
+            await api.post(
+                "/user/address",
+                addressData
+            );
+
+            dispatch(
+                fetchAddresses()
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const deleteAddress = (
+    addressId
+) => {
+    return async (dispatch) => {
+        try {
+            await api.delete(
+                `/user/address/${addressId}`
+            );
+
+            dispatch(
+                fetchAddresses()
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const updateAddress = (
+    addressData
+) => {
+    return async (dispatch) => {
+        try {
+            await api.put(
+                "/user/address",
+                addressData
+            );
+
+            dispatch(
+                fetchAddresses()
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const setCards = (cards) => {
+    return {
+        type: SET_CARDS,
+        payload: cards,
+    };
+};
+export const fetchCards = () => {
+    return async (dispatch) => {
+        try {
+
+            console.log(
+                "TOKEN:",
+                api.defaults.headers.common[
+                "Authorization"
+                ]
+            );
+
+            const response =
+                await api.get("/user/card");
+
+            dispatch(
+                setCards(response.data)
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const addCard = (
+    cardData
+) => {
+    return async (dispatch) => {
+        try {
+            await api.post(
+                "/user/card",
+                cardData
+            );
+
+            dispatch(fetchCards());
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const updateCard = (
+    cardData
+) => {
+    return async (dispatch) => {
+        try {
+            await api.put(
+                "/user/card",
+                cardData
+            );
+
+            dispatch(fetchCards());
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const deleteCard = (
+    cardId
+) => {
+    return async (dispatch) => {
+        try {
+            await api.delete(
+                `/user/card/${cardId}`
+            );
+
+            dispatch(fetchCards());
+        } catch (error) {
+            console.error(error);
+        }
+    };
+};
+export const createOrder = (
+    orderData
+) => {
+    return async () => {
+        try {
+            const response =
+                await api.post(
+                    "/order",
+                    orderData
+                );
+
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    };
+};
+export const setOrders = (
+    orders
+) => {
+    return {
+        type: SET_ORDERS,
+        payload: orders,
+    };
+};
+export const fetchOrders = () => {
+    return async (dispatch) => {
+        try {
+            const token =
+                localStorage.getItem(
+                    "token"
+                );
+
+            const response =
+                await api.get(
+                    "/order",
+                    {
+                        headers: {
+                            Authorization:
+                                token,
+                        },
+                    }
+                );
+
+            dispatch(
+                setOrders(
+                    response.data
+                )
             );
         } catch (error) {
             console.error(error);

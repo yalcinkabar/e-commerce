@@ -1,4 +1,9 @@
+import { useDispatch } from "react-redux";
+import { addToCart } from "../store/actions/shoppingCartActions";
+import { toast } from "react-toastify";
+
 function ProductInfo({ product }) {
+    const dispatch = useDispatch();
     return (
         <section className="space-y-4 p-6">
             <h1 className="text-2xl font-bold text-[#252B42]">
@@ -47,8 +52,16 @@ function ProductInfo({ product }) {
                 <button className="rounded border p-3">
                     ❤
                 </button>
+                <button
+                    onClick={() => {
+                        dispatch(addToCart(product));
 
-                <button className="rounded border p-3">
+                        toast.success(
+                            "Product added to cart!"
+                        );
+                    }}
+                    className="rounded border p-3 transition hover:bg-[#23A6F0] hover:text-white"
+                >
                     🛒
                 </button>
 

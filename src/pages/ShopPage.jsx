@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import api from '../api/axios'
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../store/actions/productActions";
+import { useParams } from "react-router-dom";
 
 import ProductCard from "../components/ProductCard";
 import CategoryCard from "../components/CategoryCard";
@@ -11,36 +13,99 @@ import BrandLogos from "../components/BrandLogos";
 
 function ShopPage() {
     const [currentPage, setCurrentPage] = useState(1);
+    const [sort, setSort] = useState("");
+    const [filter, setFilter] = useState("");
+    const { categoryId } = useParams();
+    const dispatch = useDispatch();
+
+    const products = useSelector(
+        (state) => state.product.productList
+    );
+
+    const fetchState = useSelector(
+        (state) => state.product.fetchState
+    );
+
+    const categories = useSelector(
+        (state) => state.product.categories
+    );
+
     const productsPerPage = 12;
-    const [products, setProducts] = useState([]);
+
+    const offset =
+        (currentPage - 1) * productsPerPage;
+
     useEffect(() => {
-        api
-            .get("/products")
-            .then((response) => {
-                setProducts(response.data.products);
+        dispatch(
+            fetchProducts({
+                category: categoryId,
+                sort,
+                filter,
+                limit: productsPerPage,
+                offset,
             })
-            .catch((error) => {
-                console.log(error);
-            });
-    }, [])
+        );
+    }, [
+        dispatch,
+        categoryId,
+        sort,
+        filter,
+        currentPage,
+    ]);
 
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = startIndex + productsPerPage;
 
-    const currentProducts = products.slice(
-        startIndex,
-        endIndex
+    const total = useSelector(
+        (state) => state.product.total
     );
+
     const totalPages = Math.ceil(
-        products.length / productsPerPage
+        total / productsPerPage
     );
 
+    const topCategories = [...categories]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 5);
+
+
+    if (fetchState === "FETCHING") {
+        return (
+            <div className="flex justify-center py-20">
+                <div className="text-xl font-bold">
+                    Loading...
+                </div>
+            </div>
+        );
+    }
     const productGrid = (
         <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
-            {currentProducts.map((product) => (
+            {products.map((product) => (
                 <Link
                     key={product.id}
-                    to={`/product/${product.id}`}
+                    to={`/shop/${product.category_id < 9
+                            ? "kadin"
+                            : "erkek"
+                        }/${product.name
+                            .toLowerCase()
+                            .replaceAll(" ", "-")
+                            .replaceAll("ı", "i")
+                            .replaceAll("ş", "s")
+                            .replaceAll("ç", "c")
+                            .replaceAll("ğ", "g")
+                            .replaceAll("ü", "u")
+                            .replaceAll("ö", "o")
+                        }/${product.category_id
+                        }/${product.name
+                            .toLowerCase()
+                            .replaceAll(" ", "-")
+                            .replaceAll("ı", "i")
+                            .replaceAll("ş", "s")
+                            .replaceAll("ç", "c")
+                            .replaceAll("ğ", "g")
+                            .replaceAll("ü", "u")
+                            .replaceAll("ö", "o")
+                        }/${product.id
+                        }`}
+                        className="cursor-pointer transition duration-300 hover:scale-105"
                 >
                     <ProductCard
                         image={product.images?.[0]?.url}
@@ -52,14 +117,7 @@ function ShopPage() {
                 </Link>
             ))}
         </div>
-
     );
-    const categories = useSelector(
-        (state) => state.client.categories
-    );
-    const topCategories = [...categories]
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 5);
 
     return (
         <>
@@ -89,7 +147,12 @@ function ShopPage() {
             </section>
 
             <section>
-                <FilterBar />
+                <FilterBar
+                    sort={sort}
+                    setSort={setSort}
+                    filter={filter}
+                    setFilter={setFilter}
+                />
             </section>
 
             <section>{productGrid}</section>

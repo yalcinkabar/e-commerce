@@ -85,6 +85,9 @@ function Header() {
   const categories = useSelector(
     (state) => state.client.categories
   );
+  const cart = useSelector(
+    (state) => state.shoppingCart.cart
+  );
   return (
     <header>
       {/* Dark alan - Desktop Only */}
@@ -212,16 +215,61 @@ function Header() {
               </button>
 
               {user?.email ? (
-                <div className="flex items-center gap-2">
-                  <Gravatar
-                    email={user.email}
-                    size={32}
-                    default="identicon"
-                    className="rounded-full"
-                  />
-                  <span className="text-sm font-semibold">
-                    {user.name}
-                  </span>
+                <div className="group relative">
+                  <div className="flex cursor-pointer items-center gap-2">
+                    <Gravatar
+                      email={user.email}
+                      size={32}
+                      default="identicon"
+                      className="rounded-full"
+                    />
+
+                    <span className="text-sm font-semibold">
+                      {user.name}
+                    </span>
+
+                    <ChevronDown size={16} />
+                  </div>
+
+                  <div
+                    className="
+            invisible
+            absolute
+            right-0
+            top-full
+            z-50
+            mt-2
+            w-48
+            rounded
+            border
+            bg-white
+            text-black
+            opacity-0
+            shadow-lg
+            transition-all
+            group-hover:visible
+            group-hover:opacity-100
+        "
+                  >
+                    <Link
+                      to="/orders"
+                      className="block px-4 py-3 hover:bg-gray-100"
+                    >
+                      Previous Orders
+                    </Link>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem(
+                          "token"
+                        );
+
+                        window.location.reload();
+                      }}
+                      className="block w-full px-4 py-3 text-left hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <Link
@@ -233,10 +281,52 @@ function Header() {
                 </Link>
               )}
 
-              <button className="flex items-center gap-1">
-                <ShoppingCart size={20} />
-                <span className="text-xs">1</span>
-              </button>
+              <div className="group relative">
+                <Link
+                  to="/cart"
+                  className="flex items-center gap-1"
+                >
+                  <ShoppingCart size={20} />
+                  <span className="text-xs">
+                    {cart.length}
+                  </span>
+                </Link>
+
+                <div className="absolute right-0 top-full z-50 hidden w-80 rounded bg-white p-4 text-black shadow-lg group-hover:block">
+                  <h3 className="mb-4 font-bold">
+                    Sepetim ({cart.length} Ürün)
+                  </h3>
+
+                  <div className="max-h-80 overflow-y-auto">
+                    {cart.map((item) => (
+                      <div
+                        key={item.product.id}
+                        className="mb-3 flex gap-3 border-b pb-3"
+                      >
+                        <img
+                          src={item.product.images?.[0]?.url}
+                          alt={item.product.name}
+                          className="h-16 w-16 rounded object-cover"
+                        />
+
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold">
+                            {item.product.name}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            Adet: {item.count}
+                          </p>
+
+                          <p className="text-sm font-bold text-[#23A6F0]">
+                            ${item.product.price}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               <button className="flex items-center gap-1">
                 <Heart size={20} />

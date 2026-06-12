@@ -2,6 +2,9 @@ import {
     SET_USER,
     SET_ROLES,
     SET_CATEGORIES,
+    SET_ADDRESS_LIST,
+    SET_CARDS,
+    SET_ORDERS,
 } from "../actionTypes";
 
 const initialState = {
@@ -12,6 +15,7 @@ const initialState = {
     theme: "",
     language: "",
     categories: [],
+    orderList: [],
 };
 
 export default function clientReducer(
@@ -35,6 +39,24 @@ export default function clientReducer(
             return {
                 ...state,
                 categories: action.payload,
+            };
+
+        case SET_ADDRESS_LIST:
+            return {
+                ...state,
+                addressList: action.payload,
+            };
+
+        case SET_CARDS:
+            return {
+                ...state,
+                creditCards: action.payload,
+            };
+        case SET_ORDERS:
+            return {
+                ...state,
+                orderList:
+                    action.payload,
             };
 
         default:
